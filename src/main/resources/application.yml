@@ -1,0 +1,74 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: hr-attendance-saas
+
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/hr_attendance
+#    username: hr_user
+#    password: hr_password
+#    driver-class-name: org.postgresql.Driver
+#    hikari:
+#      pool-name: HrHikariPool
+#      maximum-pool-size: 10
+#      minimum-idle: 2
+#      idle-timeout: 30000
+#      max-lifetime: 1800000
+#      connection-timeout: 20000
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+  flyway:
+    enabled: false
+
+#  jpa:
+#    hibernate:
+#      ddl-auto: validate   # NEVER use create in production
+#    open-in-view: false
+#    properties:
+#      hibernate:
+#        format_sql: true
+#        jdbc:
+#          time_zone: UTC
+#        dialect: org.hibernate.dialect.PostgreSQLDialect
+#    show-sql: false
+
+#  flyway:
+#    enabled: true
+#    baseline-on-migrate: true
+#    locations: classpath:db/migration
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,loggers
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    root: INFO
+    org.springframework: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+# Future JWT config placeholder
+security:
+  jwt:
+    secret: change-this-secret-key
+    expiration: 86400000  # 1 day in ms
