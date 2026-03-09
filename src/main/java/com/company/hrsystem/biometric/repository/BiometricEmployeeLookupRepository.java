@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface BiometricEmployeeLookupRepository extends JpaRepository<Employee, UUID> {
 
     Optional<Employee> findByCompanyIdAndEmployeeCode(UUID companyId, String employeeCode);
+
+    Optional<Employee> findByIdAndCompanyId(UUID id, UUID companyId);
 }

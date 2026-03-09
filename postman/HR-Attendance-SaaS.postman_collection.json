@@ -598,6 +598,98 @@
               ]
             }
           }
+        },
+        {
+          "name": "Receive Biometric Event (Context Path)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hrToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceId\": \"DEVICE-01\",\n  \"employeeCode\": \"EMP001\",\n  \"eventType\": \"CHECK_IN\",\n  \"eventTime\": \"2026-03-09T09:10:00\",\n  \"deviceLogId\": \"LOG-00002\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/biometric/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "biometric",
+                "events"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Receive Biometric Punch",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hrToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employeeId\": \"EMP001\",\n  \"timestamp\": \"2026-03-09T09:15:00\",\n  \"deviceId\": \"DEVICE_01\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/biometric/punch",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "biometric",
+                "punch"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Receive Biometric Punch (v1 path)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hrToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employeeId\": \"EMP001\",\n  \"timestamp\": \"2026-03-09T18:30:00\",\n  \"deviceId\": \"DEVICE_01\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/biometric/punch",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "biometric",
+                "punch"
+              ]
+            }
+          }
         }
       ]
     },

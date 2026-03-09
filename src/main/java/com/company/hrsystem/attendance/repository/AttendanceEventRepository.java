@@ -116,4 +116,20 @@ public interface AttendanceEventRepository extends JpaRepository<AttendanceEvent
             @Param("eventTypes") Set<AttendanceEventType> eventTypes,
             @Param("fromTime") Instant fromTime,
             @Param("toTime") Instant toTime);
+
+    @Query("""
+            select ae from AttendanceEvent ae
+            where ae.companyId = :companyId
+              and ae.employee.id = :employeeId
+              and ae.eventType in :eventTypes
+              and ae.eventTime >= :fromTime
+              and ae.eventTime < :toTime
+            order by ae.eventTime asc
+            """)
+    List<AttendanceEvent> findByCompanyAndEmployeeAndEventTypesAndEventTimeBetween(
+            @Param("companyId") UUID companyId,
+            @Param("employeeId") UUID employeeId,
+            @Param("eventTypes") Set<AttendanceEventType> eventTypes,
+            @Param("fromTime") Instant fromTime,
+            @Param("toTime") Instant toTime);
 }

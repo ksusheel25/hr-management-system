@@ -18,6 +18,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -107,6 +109,105 @@ public class AttendanceService {
                 workedMinutes);
     }
 
+    @Transactional
+    public BiometricPunchResult recordBiometricPunch(
+            UUID companyId,
+            Employee employee,
+            Instant punchTime,
+            String deviceLogId) {
+        var summaryDate = LocalDateTime.ofInstant(punchTime, ZoneOffset.UTC).toLocalDate();
+        var dayStart = summaryDate.atStartOfDay().toInstant(ZoneOffset.UTC);
+        var nextDayStart = summaryDate.plusDays(1).atStartOfDay().toInstant(ZoneOffset.UTC);
+
+        var daySummary = dailySummaryRepository.findByCompanyIdAndEmployee_IdAndDate(
+                companyId,
+                employee.getId(),
+                summaryDate).orElse(null);
+
+        var dayEvents = attendanceEventRepository.findByCompanyAndEmployeeAndEventTypesAndEventTimeBetween(
+                companyId,
+                employee.getId(),
+                Set.of(AttendanceEventType.CHECK_IN, AttendanceEventType.CHECK_OUT),
+                dayStart,
+                nextDayStart);
+
+        if (dayEvents.isEmpty()) {
+            saveBiometricEvent(companyId, employee, AttendanceEventType.CHECK_IN, punchTime, deviceLogId);
+
+            var summaryToSave = daySummary == null ? newDailySummary(companyId, employee, summaryDate) : daySummary;
+            summaryToSave.setDate(summaryDate);
+            summaryToSave.setFinalized(Boolean.FALSE);
+            dailySummaryRepository.save(summaryToSave);
+            return new BiometricPunchResult(
+                    "IN",
+                    "RECORDED",
+                    "Biometric check-in recorded",
+                    toLocalDateTime(punchTime),
+                    null,
+                    null);
+        }
+
+        var openCheckIn = findOpenCheckIn(dayEvents);
+        if (openCheckIn != null) {
+            saveBiometricEvent(companyId, employee, AttendanceEventType.CHECK_OUT, punchTime, deviceLogId);
+
+            var workedMinutes = Math.max(0L, Duration.between(openCheckIn.getEventTime(), punchTime).toMinutes());
+            var summaryToUpdate = daySummary == null ? newDailySummary(companyId, employee, summaryDate) : daySummary;
+            var existingWorked = summaryToUpdate.getTotalWorkedMinutes() == null ? 0L : summaryToUpdate.getTotalWorkedMinutes();
+            summaryToUpdate.setTotalWorkedMinutes(existingWorked + workedMinutes);
+            summaryToUpdate.setDate(summaryDate);
+            summaryToUpdate.setFinalized(Boolean.FALSE);
+            summaryToUpdate.setOvertimeMinutes(summaryToUpdate.getOvertimeMinutes() == null ? 0 : summaryToUpdate.getOvertimeMinutes());
+            dailySummaryRepository.save(summaryToUpdate);
+
+            return new BiometricPunchResult(
+                    "OUT",
+                    "RECORDED",
+                    "Biometric check-out recorded",
+                    toLocalDateTime(openCheckIn.getEventTime()),
+                    toLocalDateTime(punchTime),
+                    workedMinutes);
+        }
+
+        return new BiometricPunchResult(
+                "DUPLICATE",
+                "IGNORED",
+                "Duplicate punch ignored for current day",
+                null,
+                null,
+                null);
+    }
+
+    private AttendanceEvent findOpenCheckIn(List<AttendanceEvent> dayEvents) {
+        AttendanceEvent openCheckIn = null;
+        for (var event : dayEvents) {
+            if (event.getEventType() == AttendanceEventType.CHECK_IN) {
+                openCheckIn = event;
+                continue;
+            }
+            if (event.getEventType() == AttendanceEventType.CHECK_OUT && openCheckIn != null) {
+                openCheckIn = null;
+            }
+        }
+        return openCheckIn;
+    }
+
+    private void saveBiometricEvent(
+            UUID companyId,
+            Employee employee,
+            AttendanceEventType eventType,
+            Instant eventTime,
+            String deviceLogId) {
+        var event = new AttendanceEvent();
+        event.setCompanyId(companyId);
+        event.setEmployee(employee);
+        event.setEventType(eventType);
+        event.setSource(AttendanceSource.BIOMETRIC);
+        event.setEventTime(eventTime);
+        event.setDeviceLogId(companyId + ":" + deviceLogId);
+        attendanceEventRepository.save(event);
+    }
+
     private void upsertDailySummary(UUID companyId, Employee employee, Instant checkOutTime, long workedMinutes) {
         var summaryDate = LocalDateTime.ofInstant(checkOutTime, ZoneOffset.UTC).toLocalDate();
         var summary = dailySummaryRepository.findByCompanyIdAndEmployee_IdAndDate(
@@ -168,5 +269,14 @@ public class AttendanceService {
         if (principal.getEmployeeId() == null || !principal.getEmployeeId().equals(employeeId)) {
             throw new AccessDeniedException("Employees can only perform attendance actions for themselves");
         }
+    }
+
+    public record BiometricPunchResult(
+            String punchType,
+            String status,
+            String message,
+            LocalDateTime checkInTime,
+            LocalDateTime checkOutTime,
+            Long workedMinutes) {
     }
 }
