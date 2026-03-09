@@ -52,8 +52,7 @@ Thumbs.db
 ############################################
 .env
 .env.*
-application-local.yml
-application-dev.yml
+application-test.yml
 
 ############################################
 # Temporary Files

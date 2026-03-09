@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/hr_attendance
+    username: hr_user
+    password: hr_password
+    driver-class-name: org.postgresql.Driver
+
+    hikari:
+      pool-name: HrHikariPool
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      connection-timeout: 20000
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    show-sql: true
+
+  flyway:
+    enabled: false
+
+logging:
+  level:
+    root: INFO
+    org.hibernate.SQL: DEBUG
