@@ -10,6 +10,7 @@ import com.company.hrsystem.leave.entity.LeaveBalance;
 import com.company.hrsystem.leave.entity.LeaveType;
 import com.company.hrsystem.leave.repository.LeaveBalanceRepository;
 import com.company.hrsystem.leave.repository.LeaveTypeRepository;
+import com.company.hrsystem.leave.service.LeaveEntitlementService;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,6 @@ public class DevDataSeeder implements CommandLineRunner {
     private static final String DEFAULT_PASSWORD = "ChangeMe@123";
     private static final String HR_EMPLOYEE_CODE = "HR001";
     private static final String HR_USERNAME = "hr.user";
-    private static final String ANNUAL_LEAVE_TYPE_NAME = "ANNUAL";
 
     private static final int MANAGER_COUNT = 3;
     private static final int EMPLOYEES_PER_MANAGER = 10;
@@ -52,6 +52,7 @@ public class DevDataSeeder implements CommandLineRunner {
     private final AuthUserService authUserService;
     private final LeaveTypeRepository leaveTypeRepository;
     private final LeaveBalanceRepository leaveBalanceRepository;
+    private final LeaveEntitlementService leaveEntitlementService;
 
     @Override
     @Transactional
@@ -66,7 +67,7 @@ public class DevDataSeeder implements CommandLineRunner {
         var random = ThreadLocalRandom.current();
         var company = getOrCreateDevCompany();
         var tenantId = company.getCompanyId();
-        var leaveType = getOrCreateLeaveType(tenantId);
+        var leaveTypes = leaveEntitlementService.ensureDefaultLeaveTypes(tenantId);
 
         int insertedEmployees = 0;
 
@@ -81,6 +82,7 @@ public class DevDataSeeder implements CommandLineRunner {
                 randomLeaveBalance(random),
                 randomJoiningDate(random));
         authUserService.createUser(tenantId, HR_USERNAME, DEFAULT_PASSWORD, Role.HR, hr.getId(), true);
+        leaveEntitlementService.ensureDefaultBalancesForEmployee(tenantId, hr.getId(), LocalDate.now().getYear());
         insertedEmployees++;
 
         var managers = new ArrayList<Employee>(MANAGER_COUNT);
@@ -103,6 +105,7 @@ public class DevDataSeeder implements CommandLineRunner {
                     Role.EMPLOYEE,
                     manager.getId(),
                     true);
+            leaveEntitlementService.ensureDefaultBalancesForEmployee(tenantId, manager.getId(), LocalDate.now().getYear());
             managers.add(manager);
             insertedEmployees++;
         }
@@ -128,12 +131,13 @@ public class DevDataSeeder implements CommandLineRunner {
                         Role.EMPLOYEE,
                         employee.getId(),
                         true);
+                leaveEntitlementService.ensureDefaultBalancesForEmployee(tenantId, employee.getId(), LocalDate.now().getYear());
                 insertedEmployees++;
                 employeeIndex++;
             }
         }
 
-        seedLeaveBalances(tenantId, leaveType, random);
+        seedLeaveBalances(tenantId, leaveTypes.get(LeaveEntitlementService.DefaultLeaveType.ANNUAL), random);
 
         log.info("Successfully inserted {} test employees", insertedEmployees);
     }
@@ -151,19 +155,6 @@ public class DevDataSeeder implements CommandLineRunner {
         company.setCode("TEST-" + tenantId.toString().substring(0, 8).toUpperCase(Locale.ROOT));
         company.setTimezone("Asia/Kolkata");
         return companyRepository.save(company);
-    }
-
-    private LeaveType getOrCreateLeaveType(UUID tenantId) {
-        return leaveTypeRepository.findByCompanyIdAndNameIgnoreCase(tenantId, ANNUAL_LEAVE_TYPE_NAME)
-                .orElseGet(() -> {
-                    var leaveType = new LeaveType();
-                    leaveType.setCompanyId(tenantId);
-                    leaveType.setTenantId(tenantId);
-                    leaveType.setName(ANNUAL_LEAVE_TYPE_NAME);
-                    leaveType.setAnnualQuota(25);
-                    leaveType.setCarryForwardAllowed(Boolean.TRUE);
-                    return leaveTypeRepository.save(leaveType);
-                });
     }
 
     private Employee createEmployee(
@@ -196,7 +187,9 @@ public class DevDataSeeder implements CommandLineRunner {
     }
 
     private void initializeEmployeeLeaveBalance(UUID tenantId, UUID employeeId, int year, int leaveBalance) {
-        var leaveType = leaveTypeRepository.findByCompanyIdAndNameIgnoreCase(tenantId, ANNUAL_LEAVE_TYPE_NAME)
+        var leaveType = leaveTypeRepository.findByCompanyIdAndNameIgnoreCase(
+                        tenantId,
+                        LeaveEntitlementService.DefaultLeaveType.ANNUAL.name())
                 .orElseThrow(() -> new IllegalStateException("Default leave type not found for tenant"));
 
         leaveBalanceRepository.findByCompanyIdAndEmployeeIdAndLeaveTypeIdAndYear(

@@ -2,6 +2,7 @@ package com.company.hrsystem.leave.service;
 
 import com.company.hrsystem.common.context.CompanyContext;
 import com.company.hrsystem.employee.repository.EmployeeRepository;
+import com.company.hrsystem.leave.dto.LeaveBalanceAdjustRequest;
 import com.company.hrsystem.leave.dto.LeaveBalanceCreateRequest;
 import com.company.hrsystem.leave.dto.LeaveBalanceDto;
 import com.company.hrsystem.leave.dto.LeaveBalanceUpdateRequest;
@@ -40,6 +41,36 @@ public class LeaveBalanceService {
         balance.setUsed(request.used());
         validateUsage(balance.getAllocated(), balance.getUsed());
         recalculateRemaining(balance);
+        return toDto(leaveBalanceRepository.save(balance));
+    }
+
+    @Transactional
+    public LeaveBalanceDto adjust(LeaveBalanceAdjustRequest request) {
+        var companyId = requireCompanyId();
+        validateReferences(companyId, request.employeeId(), request.leaveTypeId());
+
+        var balance = leaveBalanceRepository
+                .findByCompanyIdAndEmployeeIdAndLeaveTypeIdAndYearForUpdate(
+                        companyId,
+                        request.employeeId(),
+                        request.leaveTypeId(),
+                        request.year())
+                .orElseGet(() -> newBalance(companyId, request.employeeId(), request.leaveTypeId(), request.year()));
+
+        var newAllocated = safeAdd(balance.getAllocated(), request.deltaAllocated());
+        var newUsed = safeAdd(balance.getUsed(), request.deltaUsed());
+
+        if (newAllocated < 0 || newUsed < 0) {
+            throw new IllegalArgumentException("Allocated/used leave cannot be negative");
+        }
+        if (newUsed > newAllocated) {
+            throw new IllegalStateException("Used leave cannot exceed allocated leave");
+        }
+
+        balance.setAllocated(newAllocated);
+        balance.setUsed(newUsed);
+        recalculateRemaining(balance);
+
         return toDto(leaveBalanceRepository.save(balance));
     }
 
@@ -106,6 +137,12 @@ public class LeaveBalanceService {
 
     private void recalculateRemaining(LeaveBalance balance) {
         balance.setRemaining(Math.max(0, balance.getAllocated() - balance.getUsed()));
+    }
+
+    private int safeAdd(Integer base, Integer delta) {
+        int a = base == null ? 0 : base;
+        int b = delta == null ? 0 : delta;
+        return Math.addExact(a, b);
     }
 
     private UUID requireCompanyId() {

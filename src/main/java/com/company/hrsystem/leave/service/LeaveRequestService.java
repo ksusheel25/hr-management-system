@@ -37,7 +37,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class LeaveRequestService {
 
     private static final Logger log = LoggerFactory.getLogger(LeaveRequestService.class);
-    private static final String WFH_LEAVE_TYPE = "WFH";
     private static final List<LeaveStatus> OVERLAP_BLOCKING_STATUSES = List.of(LeaveStatus.PENDING, LeaveStatus.APPROVED);
 
     private final LeaveRequestRepository leaveRequestRepository;
@@ -45,6 +44,7 @@ public class LeaveRequestService {
     private final LeaveTypeRepository leaveTypeRepository;
     private final LeaveBalanceRepository leaveBalanceRepository;
     private final NotificationService notificationService;
+    private final LeaveEntitlementService leaveEntitlementService;
 
     @Transactional
     public LeaveRequestDto create(LeaveRequestCreateRequest request) {
@@ -177,15 +177,24 @@ public class LeaveRequestService {
             return toDto(leaveRequest);
         }
 
-        if (status == LeaveStatus.APPROVED && !isWfhLeaveType(leaveRequest.getLeaveType())) {
+        if (status == LeaveStatus.APPROVED) {
             var leaveType = resolveLeaveType(companyId, leaveRequest.getLeaveType());
             var requestedDaysByYear = computeRequestedDaysByYear(leaveRequest.getFromDate(), leaveRequest.getToDate());
+            leaveEntitlementService.ensureBalancesForDefaultLeaveTypeYears(
+                    companyId,
+                    leaveRequest.getEmployeeId(),
+                    leaveType.getId(),
+                    requestedDaysByYear.keySet());
             deductLeaveBalance(companyId, leaveRequest.getEmployeeId(), leaveType.getId(), requestedDaysByYear);
         } else if (currentStatus == LeaveStatus.APPROVED
-                && (status == LeaveStatus.REJECTED || status == LeaveStatus.CANCELLED)
-                && !isWfhLeaveType(leaveRequest.getLeaveType())) {
+                && (status == LeaveStatus.REJECTED || status == LeaveStatus.CANCELLED)) {
             var leaveType = resolveLeaveType(companyId, leaveRequest.getLeaveType());
             var requestedDaysByYear = computeRequestedDaysByYear(leaveRequest.getFromDate(), leaveRequest.getToDate());
+            leaveEntitlementService.ensureBalancesForDefaultLeaveTypeYears(
+                    companyId,
+                    leaveRequest.getEmployeeId(),
+                    leaveType.getId(),
+                    requestedDaysByYear.keySet());
             restoreLeaveBalance(companyId, leaveRequest.getEmployeeId(), leaveType.getId(), requestedDaysByYear);
         }
 
@@ -408,10 +417,6 @@ public class LeaveRequestService {
         }
 
         return balances;
-    }
-
-    private boolean isWfhLeaveType(String leaveType) {
-        return leaveType != null && WFH_LEAVE_TYPE.equalsIgnoreCase(leaveType.trim());
     }
 
     private String normalizeLeaveType(String leaveType) {

@@ -12,6 +12,8 @@ public interface LeaveTypeRepository extends JpaRepository<LeaveType, UUID> {
 
     Optional<LeaveType> findByIdAndCompanyId(UUID id, UUID companyId);
 
+    List<LeaveType> findByCompanyIdAndIdIn(UUID companyId, List<UUID> ids);
+
     Optional<LeaveType> findByCompanyIdAndNameIgnoreCase(UUID companyId, String name);
 
     boolean existsByCompanyIdAndNameIgnoreCase(UUID companyId, String name);

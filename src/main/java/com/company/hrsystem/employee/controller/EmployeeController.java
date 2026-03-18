@@ -3,6 +3,7 @@ package com.company.hrsystem.employee.controller;
 import com.company.hrsystem.employee.dto.EmployeeCreateRequest;
 import com.company.hrsystem.employee.dto.EmployeeDto;
 import com.company.hrsystem.employee.dto.EmployeeUpdateRequest;
+import com.company.hrsystem.employee.dto.WfhBalanceAdjustRequest;
 import com.company.hrsystem.employee.service.EmployeeService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -44,5 +45,12 @@ public class EmployeeController {
     @PatchMapping("/{employeeId}/deactivate")
     public EmployeeDto deactivateEmployee(@PathVariable UUID employeeId) {
         return employeeService.deactivateEmployee(employeeId);
+    }
+
+    @PatchMapping("/{employeeId}/wfh-balance")
+    public EmployeeDto adjustWfhBalance(
+            @PathVariable UUID employeeId,
+            @Valid @RequestBody WfhBalanceAdjustRequest request) {
+        return employeeService.adjustWfhBalance(employeeId, request.delta());
     }
 }

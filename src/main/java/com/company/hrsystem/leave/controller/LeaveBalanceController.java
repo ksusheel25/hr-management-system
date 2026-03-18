@@ -1,5 +1,6 @@
 package com.company.hrsystem.leave.controller;
 
+import com.company.hrsystem.leave.dto.LeaveBalanceAdjustRequest;
 import com.company.hrsystem.leave.dto.LeaveBalanceCreateRequest;
 import com.company.hrsystem.leave.dto.LeaveBalanceDto;
 import com.company.hrsystem.leave.dto.LeaveBalanceUpdateRequest;
@@ -31,6 +32,11 @@ public class LeaveBalanceController {
     @PostMapping
     public LeaveBalanceDto createOrUpdate(@Valid @RequestBody LeaveBalanceCreateRequest request) {
         return leaveBalanceService.createOrUpdate(request);
+    }
+
+    @PostMapping("/adjust")
+    public LeaveBalanceDto adjust(@Valid @RequestBody LeaveBalanceAdjustRequest request) {
+        return leaveBalanceService.adjust(request);
     }
 
     @GetMapping

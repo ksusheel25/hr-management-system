@@ -274,6 +274,40 @@
               ]
             }
           }
+        },
+        {
+          "name": "Adjust WFH Balance (Add/Subtract)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hrToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"delta\": 2\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/employees/{{employeeId}}/wfh-balance",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "employees",
+                "{{employeeId}}",
+                "wfh-balance"
+              ]
+            }
+          }
         }
       ]
     },
@@ -450,6 +484,34 @@
                 "api",
                 "v1",
                 "admin",
+                "work-policy"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Work Policy (EMPLOYEE)",
+      "item": [
+        {
+          "name": "Get Work Policy (Self)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/work-policy",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
                 "work-policy"
               ]
             }
@@ -759,6 +821,44 @@
       ]
     },
     {
+      "name": "Holiday (EMPLOYEE)",
+      "item": [
+        {
+          "name": "List Holidays (Self)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/holidays?from={{fromDate}}&to={{toDate}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "holidays"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "{{fromDate}}"
+                },
+                {
+                  "key": "to",
+                  "value": "{{toDate}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "Leave Types (HR)",
       "item": [
         {
@@ -913,6 +1013,39 @@
           }
         },
         {
+          "name": "Adjust Leave Balance (Add/Subtract)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hrToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employeeId\": \"{{employeeId}}\",\n  \"leaveTypeId\": \"{{leaveTypeId}}\",\n  \"year\": 2026,\n  \"deltaAllocated\": 1,\n  \"deltaUsed\": 0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/leave-balances/adjust",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "leave-balances",
+                "adjust"
+              ]
+            }
+          }
+        },
+        {
           "name": "List Leave Balances",
           "request": {
             "method": "GET",
@@ -996,6 +1129,35 @@
                 "admin",
                 "leave-balances",
                 "{{leaveBalanceId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Leave Balances (EMPLOYEE)",
+      "item": [
+        {
+          "name": "List My Leave Balances",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/leave-balances/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "leave-balances",
+                "me"
               ]
             }
           }

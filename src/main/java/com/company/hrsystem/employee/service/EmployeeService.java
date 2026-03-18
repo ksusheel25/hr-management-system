@@ -8,6 +8,7 @@ import com.company.hrsystem.employee.dto.EmployeeDto;
 import com.company.hrsystem.employee.dto.EmployeeUpdateRequest;
 import com.company.hrsystem.employee.entity.Employee;
 import com.company.hrsystem.employee.repository.EmployeeRepository;
+import com.company.hrsystem.leave.service.LeaveEntitlementService;
 import com.company.hrsystem.shift.entity.Shift;
 import com.company.hrsystem.shift.repository.ShiftRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,6 +25,7 @@ public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final CompanyRepository companyRepository;
     private final ShiftRepository shiftRepository;
+    private final LeaveEntitlementService leaveEntitlementService;
 
     @Transactional
     public EmployeeDto createEmployee(EmployeeCreateRequest request) {
@@ -39,7 +41,9 @@ public class EmployeeService {
         employee.setEmail(request.email());
         employee.setActive(Boolean.TRUE);
         employee.setRemainingWfhBalance(defaultZero(request.remainingWfhBalance()));
-        return toDto(employeeRepository.save(employee));
+        var saved = employeeRepository.save(employee);
+        leaveEntitlementService.ensureDefaultBalancesForEmployee(companyId, saved.getId(), LeaveEntitlementService.currentYear());
+        return toDto(saved);
     }
 
     @Transactional(readOnly = true)
@@ -74,6 +78,19 @@ public class EmployeeService {
         var companyId = requireCompanyId();
         var employee = getEmployeeForCompany(companyId, employeeId);
         employee.setActive(Boolean.FALSE);
+        return toDto(employeeRepository.save(employee));
+    }
+
+    @Transactional
+    public EmployeeDto adjustWfhBalance(UUID employeeId, int delta) {
+        var companyId = requireCompanyId();
+        var employee = getEmployeeForCompany(companyId, employeeId);
+        int current = employee.getRemainingWfhBalance() == null ? 0 : employee.getRemainingWfhBalance();
+        int updated = Math.addExact(current, delta);
+        if (updated < 0) {
+            throw new IllegalArgumentException("remainingWfhBalance cannot be negative");
+        }
+        employee.setRemainingWfhBalance(updated);
         return toDto(employeeRepository.save(employee));
     }
 
