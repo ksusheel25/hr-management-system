@@ -33,6 +33,33 @@
               ]
             }
           }
+        },
+        {
+          "name": "Login (Context Path)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tenantId\": \"{{tenantId}}\",\n  \"username\": \"hrmanager\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          }
         }
       ]
     },
@@ -1239,6 +1266,37 @@
           }
         },
         {
+          "name": "Apply Leave (Context Path)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"leaveType\": \"ANNUAL\",\n  \"fromDate\": \"2026-03-15\",\n  \"toDate\": \"2026-03-16\",\n  \"reason\": \"Personal\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/leave/apply",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "leave",
+                "apply"
+              ]
+            }
+          }
+        },
+        {
           "name": "My Leave Requests",
           "request": {
             "method": "GET",
@@ -1261,6 +1319,29 @@
           }
         },
         {
+          "name": "My Leave Requests (Context Path)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/leave/my",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "leave",
+                "my"
+              ]
+            }
+          }
+        },
+        {
           "name": "Pending Leaves For Manager",
           "request": {
             "method": "GET",
@@ -1276,6 +1357,29 @@
                 "{{baseUrl}}"
               ],
               "path": [
+                "leave",
+                "pending"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Pending Leaves For Manager (Context Path)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hrToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/leave/pending",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
                 "leave",
                 "pending"
               ]
@@ -1306,6 +1410,38 @@
                 "{{baseUrl}}"
               ],
               "path": [
+                "leave",
+                "{{leaveRequestId}}",
+                "approve"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Approve Leave (Context Path)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hrToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remarks\": \"Approved\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/leave/{{leaveRequestId}}/approve",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
                 "leave",
                 "{{leaveRequestId}}",
                 "approve"
@@ -1345,6 +1481,38 @@
           }
         },
         {
+          "name": "Reject Leave (Context Path)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hrToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remarks\": \"Rejected\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/leave/{{leaveRequestId}}/reject",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "leave",
+                "{{leaveRequestId}}",
+                "reject"
+              ]
+            }
+          }
+        },
+        {
           "name": "Legacy Approve Leave",
           "request": {
             "method": "PATCH",
@@ -1360,6 +1528,30 @@
                 "{{baseUrl}}"
               ],
               "path": [
+                "leave",
+                "approve",
+                "{{leaveRequestId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Legacy Approve Leave (Context Path)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hrToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/leave/approve/{{leaveRequestId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
                 "leave",
                 "approve",
                 "{{leaveRequestId}}"
@@ -1395,6 +1587,29 @@
           }
         },
         {
+          "name": "Get My Notifications (Context Path)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hrToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications/my",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notifications",
+                "my"
+              ]
+            }
+          }
+        },
+        {
           "name": "Mark Notification As Read",
           "request": {
             "method": "PUT",
@@ -1410,6 +1625,30 @@
                 "{{baseUrl}}"
               ],
               "path": [
+                "notifications",
+                "{{notificationId}}",
+                "read"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Mark Notification As Read (Context Path)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hrToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications/{{notificationId}}/read",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
                 "notifications",
                 "{{notificationId}}",
                 "read"
