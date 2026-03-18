@@ -14,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -28,10 +29,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomUserDetailsService customUserDetailsService;
     private final ObjectMapper objectMapper;
+    private final RoleHierarchy roleHierarchy;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return "/auth/login".equals(request.getServletPath())
+        return "/api/v1/auth/login".equals(request.getServletPath())
                 && "POST".equalsIgnoreCase(request.getMethod());
     }
 
@@ -63,10 +65,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
+            var reachableAuthorities = roleHierarchy.getReachableGrantedAuthorities(userDetails.getAuthorities());
             var authentication = new UsernamePasswordAuthenticationToken(
                     userDetails,
                     null,
-                    userDetails.getAuthorities());
+                    reachableAuthorities);
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (Exception ex) {

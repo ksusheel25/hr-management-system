@@ -23,38 +23,13 @@
               "raw": "{\n  \"tenantId\": \"{{tenantId}}\",\n  \"username\": \"hrmanager\",\n  \"password\": \"password\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/auth/login",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Login (Context Path)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"tenantId\": \"{{tenantId}}\",\n  \"username\": \"hrmanager\",\n  \"password\": \"password\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/auth/login",
+              "raw": "{{baseUrl}}/api/v1/auth/login",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
+                "v1",
                 "auth",
                 "login"
               ]
@@ -189,6 +164,30 @@
                 "v1",
                 "admin",
                 "employees"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get My Profile (me)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{employeeToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "employees",
+                "me"
               ]
             }
           }
@@ -558,36 +557,6 @@
               ]
             }
           }
-        },
-        {
-          "name": "Get My Attendance (self)",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{employeeToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/attendance/self?from={{fromDate}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "attendance",
-                "self"
-              ],
-              "query": [
-                {
-                  "key": "from",
-                  "value": "{{fromDate}}"
-                }
-              ]
-            }
-          }
         }
       ]
     },
@@ -627,67 +596,7 @@
           }
         },
         {
-          "name": "Receive Biometric Event (Context Path)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{hrToken}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"deviceId\": \"DEVICE-01\",\n  \"employeeCode\": \"EMP001\",\n  \"eventType\": \"CHECK_IN\",\n  \"eventTime\": \"2026-03-09T09:10:00\",\n  \"deviceLogId\": \"LOG-00002\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/biometric/events",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "biometric",
-                "events"
-              ]
-            }
-          }
-        },
-        {
           "name": "Receive Biometric Punch",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{hrToken}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"employeeId\": \"EMP001\",\n  \"timestamp\": \"2026-03-09T09:15:00\",\n  \"deviceId\": \"DEVICE_01\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/biometric/punch",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "biometric",
-                "punch"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Receive Biometric Punch (v1 path)",
           "request": {
             "method": "POST",
             "header": [
@@ -1254,42 +1163,13 @@
               "raw": "{\n  \"leaveType\": \"ANNUAL\",\n  \"fromDate\": \"2026-03-15\",\n  \"toDate\": \"2026-03-16\",\n  \"reason\": \"Personal\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/leave/apply",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "leave",
-                "apply"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Apply Leave (Context Path)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{employeeToken}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"leaveType\": \"ANNUAL\",\n  \"fromDate\": \"2026-03-15\",\n  \"toDate\": \"2026-03-16\",\n  \"reason\": \"Personal\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/leave/apply",
+              "raw": "{{baseUrl}}/api/v1/leave/apply",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
+                "v1",
                 "leave",
                 "apply"
               ]
@@ -1307,34 +1187,13 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/leave/my",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "leave",
-                "my"
-              ]
-            }
-          }
-        },
-        {
-          "name": "My Leave Requests (Context Path)",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{employeeToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/leave/my",
+              "raw": "{{baseUrl}}/api/v1/leave/my",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
+                "v1",
                 "leave",
                 "my"
               ]
@@ -1352,34 +1211,13 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/leave/pending",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "leave",
-                "pending"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Pending Leaves For Manager (Context Path)",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{hrToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/leave/pending",
+              "raw": "{{baseUrl}}/api/v1/leave/pending",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
+                "v1",
                 "leave",
                 "pending"
               ]
@@ -1405,43 +1243,13 @@
               "raw": "{\n  \"remarks\": \"Approved\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/leave/{{leaveRequestId}}/approve",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "leave",
-                "{{leaveRequestId}}",
-                "approve"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Approve Leave (Context Path)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{hrToken}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"remarks\": \"Approved\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/leave/{{leaveRequestId}}/approve",
+              "raw": "{{baseUrl}}/api/v1/leave/{{leaveRequestId}}/approve",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
+                "v1",
                 "leave",
                 "{{leaveRequestId}}",
                 "approve"
@@ -1468,93 +1276,16 @@
               "raw": "{\n  \"remarks\": \"Rejected\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/leave/{{leaveRequestId}}/reject",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "leave",
-                "{{leaveRequestId}}",
-                "reject"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Reject Leave (Context Path)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{hrToken}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"remarks\": \"Rejected\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/leave/{{leaveRequestId}}/reject",
+              "raw": "{{baseUrl}}/api/v1/leave/{{leaveRequestId}}/reject",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
+                "v1",
                 "leave",
                 "{{leaveRequestId}}",
                 "reject"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Legacy Approve Leave",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{hrToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/leave/approve/{{leaveRequestId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "leave",
-                "approve",
-                "{{leaveRequestId}}"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Legacy Approve Leave (Context Path)",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{hrToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/leave/approve/{{leaveRequestId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "leave",
-                "approve",
-                "{{leaveRequestId}}"
               ]
             }
           }
@@ -1575,34 +1306,13 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/notifications/my",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "notifications",
-                "my"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Get My Notifications (Context Path)",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{hrToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/notifications/my",
+              "raw": "{{baseUrl}}/api/v1/notifications/my",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
+                "v1",
                 "notifications",
                 "my"
               ]
@@ -1620,35 +1330,13 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/notifications/{{notificationId}}/read",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "notifications",
-                "{{notificationId}}",
-                "read"
-              ]
-            }
-          }
-        },
-        {
-          "name": "Mark Notification As Read (Context Path)",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{hrToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/notifications/{{notificationId}}/read",
+              "raw": "{{baseUrl}}/api/v1/notifications/{{notificationId}}/read",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
+                "v1",
                 "notifications",
                 "{{notificationId}}",
                 "read"
@@ -1682,12 +1370,13 @@
               ]
             },
             "url": {
-              "raw": "{{baseUrl}}/api/admin/users/bulk-upload",
+              "raw": "{{baseUrl}}/api/v1/admin/users/bulk-upload",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
+                "v1",
                 "admin",
                 "users",
                 "bulk-upload"
