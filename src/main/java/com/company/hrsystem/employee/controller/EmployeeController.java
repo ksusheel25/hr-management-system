@@ -21,13 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/admin/employees")
-@PreAuthorize("hasRole('HR')")
 @RequiredArgsConstructor
 public class EmployeeController {
 
     private final EmployeeService employeeService;
 
     @PostMapping
+    @PreAuthorize("hasRole('HR')")
     public EmployeeDto createEmployee(@Valid @RequestBody EmployeeCreateRequest request) {
         return employeeService.createEmployee(request);
     }
@@ -42,6 +42,7 @@ public class EmployeeController {
         return employeeService.updateEmployee(employeeId, request);
     }
 
+    @PreAuthorize("hasRole('HR')")
     @PatchMapping("/{employeeId}/deactivate")
     public EmployeeDto deactivateEmployee(@PathVariable UUID employeeId) {
         return employeeService.deactivateEmployee(employeeId);

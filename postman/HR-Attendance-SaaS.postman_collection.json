@@ -834,7 +834,7 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/holidays?from={{fromDate}}&to={{toDate}}",
+              "raw": "{{baseUrl}}/api/v1/holidays",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -842,16 +842,6 @@
                 "api",
                 "v1",
                 "holidays"
-              ],
-              "query": [
-                {
-                  "key": "from",
-                  "value": "{{fromDate}}"
-                },
-                {
-                  "key": "to",
-                  "value": "{{toDate}}"
-                }
               ]
             }
           }

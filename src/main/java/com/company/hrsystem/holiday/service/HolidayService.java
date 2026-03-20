@@ -58,6 +58,15 @@ public class HolidayService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<HolidayDto> listAll() {
+        var companyId = requireCompanyId();
+        return holidayRepository.findByCompanyIdOrderByDateAsc(companyId)
+                .stream()
+                .map(this::toDto)
+                .toList();
+    }
+
     @Transactional
     @Auditable(action = "HOLIDAY_UPDATE", module = "HOLIDAY")
     public HolidayDto update(UUID holidayId, HolidayUpdateRequest request) {

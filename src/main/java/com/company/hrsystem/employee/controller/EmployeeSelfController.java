@@ -16,7 +16,7 @@ public class EmployeeSelfController {
     private final EmployeeSelfService employeeSelfService;
 
     @GetMapping("/me")
-    @PreAuthorize("hasAnyRole('EMPLOYEE','HR')")
+    @PreAuthorize("hasAnyRole('EMPLOYEE','HR', 'MANAGER')")
     public EmployeeDto me() {
         return employeeSelfService.getMyProfile();
     }

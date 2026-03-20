@@ -42,6 +42,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v2/auth/login", "/api/v2/auth/refresh", "/api/v2/auth/logout").permitAll()
                         .requestMatchers("/h2-console/**", "/api/h2-console/**").permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "/actuator/health",

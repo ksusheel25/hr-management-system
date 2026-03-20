@@ -33,8 +33,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return "/api/v1/auth/login".equals(request.getServletPath())
-                && "POST".equalsIgnoreCase(request.getMethod());
+        if (!"POST".equalsIgnoreCase(request.getMethod())) {
+            return false;
+        }
+        var path = request.getServletPath();
+        return "/api/v1/auth/login".equals(path)
+                || "/api/v2/auth/login".equals(path)
+                || "/api/v2/auth/refresh".equals(path)
+                || "/api/v2/auth/logout".equals(path);
     }
 
     @Override
